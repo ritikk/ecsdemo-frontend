@@ -17,14 +17,13 @@ phases:
           export CODEBUILD_GIT_BRANCH=${CODEBUILD_GIT_BRANCH#remotes/origin/};
         fi
       - export CODEBUILD_GIT_CLEAN_BRANCH="$(echo $CODEBUILD_GIT_BRANCH | tr '/' '.')"
-      - export CODEBUILD_GIT_ESCAPED_BRANCH="$(echo $CODEBUILD_GIT_CLEAN_BRANCH | sed -e 's/[]\/$*.^[]/\\\\&/g')"
+      - export CODEBUILD_GIT_ESCAPED_BRANCH="$(echo $CODEBUILD_GIT_CLEAN_BRANCH | sed -e 's/[]\\/$*.^[]/\\\\\\\\&/g')"
       - if [ "$CODEBUILD_GIT_CLEAN_BRANCH" = "master" ] ; then
           export IMAGE_WORD_TAG='latest';
         else
           export IMAGE_WORD_TAG=${CODEBUILD_GIT_CLEAN_BRANCH};
         fi
-      - echo '***** This is the current env:'
-      - printenv
+      - echo '***** Build environment configured'
   pre_build:
     commands:
       - echo Logging in to Docker Hub...

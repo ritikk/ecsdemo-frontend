@@ -46,6 +46,9 @@ class ApplicationController < ActionController::Base
       logger.error e.message
       @crystal = "no backend found"
     end
+
+    # Explicit render to mitigate CVE-2019-5418 (File Content Disclosure via Accept header)
+    render template: "application/index"
   end
 
   # This endpoint is used for health checks. It should return a 200 OK when the app is up and ready to serve requests.

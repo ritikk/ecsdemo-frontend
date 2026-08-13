@@ -16,6 +16,10 @@ RUN apt-get update && apt-get -y install iproute2 curl jq libgmp3-dev ruby-dev b
 COPY . /usr/src/app
 RUN chmod +x /usr/src/app/startup-cdk.sh
 
+# Create a non-root user and set ownership of app files
+RUN groupadd -r appuser && useradd -r -g appuser -d /usr/src/app appuser && \
+    chown -R appuser:appuser /usr/src/app
+
 # helpful when trying to update gems -> bundle update, remove the Gemfile.lock, start ruby
 # RUN bundle update
 # RUN rm -vf /usr/src/app/Gemfile.lock
@@ -23,4 +27,8 @@ RUN chmod +x /usr/src/app/startup-cdk.sh
 HEALTHCHECK --interval=10s --timeout=3s \
   CMD curl -f -s http://localhost:3000/health/ || exit 1
 EXPOSE 3000
+
+# Run as non-root user to limit filesystem access in case of exploitation
+USER appuser
+
 ENTRYPOINT ["bash","/usr/src/app/startup-cdk.sh"]
